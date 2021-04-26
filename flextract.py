@@ -28,8 +28,6 @@ for coord in coordinates:
     utm_coordinates += [utm.from_latlon(float(parts[1]), float(parts[0]))]
 
 
-# now find flight lines
-
 def get_len(utm_a, utm_b):
     return math.sqrt(math.pow(utm_b[0] - utm_a[0], 2) + math.pow(utm_b[1] - utm_a[1], 2))
 
@@ -38,8 +36,8 @@ def get_bearing(utm_a, utm_b):
     return math.atan2(utm_b[0] - utm_a[0], utm_b[1] - utm_a[1])
 
 
-# radians per meter
-angle_threshold_rad_per_meter = math.radians(1.0)  # degrees to radians
+# now find flight lines
+angle_threshold_rad_per_meter = math.radians(1.0)
 length_threshold_meters = 20
 
 flight_lines = []
@@ -95,7 +93,6 @@ for i in range(len(flight_lines)):
     folder_fl.append(pm)
 
 output_kml = KML.kml(folder_fl)
-print(etree.tostring(output_kml, pretty_print=True))
 
 with open('out.kml', 'wb') as f:
     f.write(etree.tostring(output_kml, pretty_print=True))
