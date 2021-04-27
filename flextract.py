@@ -13,7 +13,6 @@ coordinates = []
 # extract all coordinates from the kml
 with open(kml_file) as f:
     root = etree.parse(f).getroot()
-
     for elem in root.getiterator():
         if 'LineString' in elem.tag:
             for child in elem.getiterator():
