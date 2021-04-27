@@ -6,7 +6,7 @@ from lxml import etree
 import utm
 from os import path
 
-kml_file = 'Palms vux1lr 120-60m_3Dpath.kml'
+kml_file = 'Palms vlp16 40-30m_3Dpath.kml'
 
 coordinates = []
 
@@ -22,12 +22,12 @@ with open(kml_file) as f:
 
 # convert coordinates from lat lon to utm
 utm_coordinates = []
-
 for coord in coordinates:
     parts = coord.split(',')
     utm_coordinates += [utm.from_latlon(float(parts[1]), float(parts[0]))]
 
 
+# helper functions
 def get_len(utm_a, utm_b):
     return math.sqrt(math.pow(utm_b[0] - utm_a[0], 2) + math.pow(utm_b[1] - utm_a[1], 2))
 
@@ -61,7 +61,7 @@ for i in range(0, len(utm_coordinates)):
 
     radians_per_meter = bearing_delta / length_bc
 
-    if radians_per_meter > angle_threshold_rad_per_meter:
+    if (radians_per_meter > angle_threshold_rad_per_meter) or (i+2 >= (len(utm_coordinates)-1)):
         current_fl += [i + 0]
         current_fl += [i + 1]
         current_fl_length += length_ab
@@ -83,7 +83,7 @@ for fl in flight_lines:
 
 
 # create output kml
-folder_fl = KML.Folder(KML.name('extracted flightlines'))
+folder_fl = KML.Folder(KML.name('flight lines'))
 for i in range(len(flight_lines)):
     ls = ''
     for coord_index in flight_lines[i]:
@@ -92,8 +92,7 @@ for i in range(len(flight_lines)):
     pm = KML.Placemark(KML.name('%d' % (i+1)), KML.LineString(KML.altitudeMode('absolute'), KML.coordinates(ls)))
     folder_fl.append(pm)
 
-output_kml = KML.kml(folder_fl)
+output_kml = KML.kml(KML.Document(folder_fl))
 
-with open('out.kml', 'wb') as f:
+with open(kml_file[:-4] + '_flextracted.kml', 'wb') as f:
     f.write(etree.tostring(output_kml, pretty_print=True))
-
